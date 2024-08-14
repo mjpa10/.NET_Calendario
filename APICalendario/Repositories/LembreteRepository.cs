@@ -23,14 +23,17 @@ public class LembreteRepository : ILembreteRepository
     {
         return _context.Lembretes.ToList();
     }
-    public IEnumerable<Lembrete> GetLembretesPagination(LembretesParameters lembretesParams)
+    public PagedList<Lembrete> GetLembretesPagination(LembretesParameters lembretesParams)
     {
-        return GetLembretes() // Obtém todos os lembretes
-            .OrderBy(l => l.Data)//ordenar a paginacao por data
-            .ThenBy(l => l.HoraInicio)// Se dois lembretes tiverem a mesma data, eles serão ordenados pela hora de início.
-            .Skip((lembretesParams.PageNumber -1)* lembretesParams.PageSize)// cada pagina vai trazer novas informacoes,essa linha pula os dados da pagina aterior
-            .Take(lembretesParams.PageSize) // retorna o número de registros especificado pelo PageSize
-            .ToList();// retorna a lista de lembretes ja ordenada
+       var lembretes = GetLembretes()
+            .OrderBy(l => l.Data)// Ordena os lembretes pela data em ordem crescente
+            .AsQueryable();// Converte para IQueryable para suportar consultas eficientes
+
+        // Cria uma lista paginada a partir dos lembretes ordenados
+        var lembretesOrdenados = PagedList<Lembrete>  
+      .ToPagedList(lembretes, lembretesParams.PageNumber, lembretesParams.PageSize);
+
+        return lembretesOrdenados;
     }
 
     public Lembrete GetLembrete(int id)

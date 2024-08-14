@@ -5,6 +5,7 @@ using APICalendario.Pagination;
 using APICalendario.Repositories;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace APICalendario.Controllers;
 
@@ -57,8 +58,19 @@ public class LembretesController : ControllerBase
                                          LembretesParameters lembretesParameters)
     {
         var lembretes = _uof.LembreteRepository.GetLembretesPagination(lembretesParameters);
+
+        var metadata = new
+        {
+            lembretes.TotalCount,
+            lembretes.PageSize,
+            lembretes.CurrentPage,
+            lembretes.TotalPages,
+            lembretes.HasNext,
+            lembretes.HasPrevious
+        };
+        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
          
-        var lembretesDTO = _mapper.Map<IEnumerable<LembreteDTO>>( lembretes);
+        var lembretesDTO = _mapper.Map<IEnumerable<LembreteDTO>>(lembretes);
 
         return Ok(lembretesDTO);
     }
