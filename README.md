@@ -37,8 +37,10 @@ dotnet restore
 ### 3. Configurando o Banco de Dados
 
 - Atualize as configurações de conexão no arquivo `appsettings.json`.
-- Execute as migrações para configurar o banco de dados: `dotnet ef migrations add MigracaoClone`.
-
+- Execute as migrações para configurar o banco de dados:
+```bash
+dotnet ef migrations add MigracaoClone
+```
 ```bash
 dotnet ef database update
 ```
