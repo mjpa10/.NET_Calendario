@@ -21,8 +21,8 @@ Este projeto é uma API para gerenciamento de lembretes, desenvolvida utilizando
 ### 1. Clonando o Repositório
 
 ```bash
-git clone https://github.com/mjpa10/APICalendario_.Net.git
-cd APICalendario_.Net
+git clone https://github.com/mjpa10/.NET_Calendario.git
+cd .Net_Calendario
 cd APICalendario
 ```
 
