@@ -53,11 +53,7 @@ dotnet build
 
 ### 5. Executando o Projeto
 
-Inicie o projeto com o comando:
-
-```bash
-dotnet run
-```
+abra a solução e execute o projeto
 
 ## Estrutura do Projeto
 
