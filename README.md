@@ -55,7 +55,11 @@ dotnet build
 
 ### 5. Executando o Projeto
 
-abra a solução e execute o projeto
+Execute o projeto utlizando o comando :
+
+```bash
+dotnet watch run
+```
 
 ## Estrutura do Projeto
 
