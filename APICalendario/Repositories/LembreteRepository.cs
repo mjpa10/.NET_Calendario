@@ -25,16 +25,26 @@ public class LembreteRepository : ILembreteRepository
     }
     public PagedList<Lembrete> GetLembretesPagination(LembretesParameters lembretesParams)
     {
-       var lembretes = GetLembretes()
-            .OrderBy(l => l.Data)// Ordena os lembretes pela data em ordem crescente
-            .AsQueryable();// Converte para IQueryable para suportar consultas eficientes
+        var lembretes = GetLembretes()
+             .OrderBy(l => l.Data)// Ordena os lembretes pela data em ordem crescente
+             .AsQueryable();// Converte para IQueryable para suportar consultas eficientes
 
         // Cria uma lista paginada a partir dos lembretes ordenados
-        var lembretesOrdenados = PagedList<Lembrete>  
+        var lembretesOrdenados = PagedList<Lembrete>
       .ToPagedList(lembretes, lembretesParams.PageNumber, lembretesParams.PageSize);
 
         return lembretesOrdenados;
     }
+    public PagedList<Lembrete> GetLembretesPagination(LembretesFiltroData lembretesFiltroParams)
+    {
+        var lembretes = GetLembretes().AsQueryable();
+
+        if (lembretesFiltroParams.Data.HasValue && !string.IsNullOrEmpty(lembretesFiltroParams.DataCriterio)
+        {
+
+        }
+    }
+
 
     public Lembrete GetLembrete(int id)
     {
