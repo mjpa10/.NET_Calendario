@@ -51,8 +51,8 @@ dotnet restore
   },
   "AllowedHosts": "*"
 }
-
 ```
+
 - Execute as migrações para configurar o banco de dados:
 
 ```bash
