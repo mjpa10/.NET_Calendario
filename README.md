@@ -38,7 +38,7 @@ dotnet restore
 
 - Crie as configurações de conexão no arquivo `appsettings.json` seguindo esse modelo:
   
-  ```bash
+```bash
   {
   "Logging": {
     "LogLevel": {
@@ -50,7 +50,7 @@ dotnet restore
       "DefaultConnection": "Server=localhost;Database=calendariodb;User Id=seu_usuario;Password=sua_senha;"
   },
   "AllowedHosts": "*"
-}
+}```
 ```
 
 - Execute as migrações para configurar o banco de dados:
