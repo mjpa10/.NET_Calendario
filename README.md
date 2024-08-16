@@ -40,7 +40,7 @@ dotnet restore
 
 ### 3. Configurando o Banco de Dados
 
-- Crie as configurações de conexão no arquivo `appsettings.json` seguindo esse modelo:
+- Crie as configurações de conexão no arquivo `appsettings.json`dentro da pasta `\APICalendario`, seguindo esse modelo:
   
 ```bash
   {
