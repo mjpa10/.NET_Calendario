@@ -24,28 +24,28 @@ public class LembretesController : ControllerBase
         _mapper = mapper;
 
     }
-   
+
     [HttpGet]
     public ActionResult<IEnumerable<LembreteDTO>> Get()
     //IEnumerable retorna uma lista de objetos lembrete
     {
-      var lembretes = _uof.LembreteRepository.GetLembretes();
+        var lembretes = _uof.LembreteRepository.GetLembretes();
 
         //var destino = _mapper.map<Destino>(origem);
-      var lembretesDto = _mapper.Map<IEnumerable< LembreteDTO >>(lembretes);
+        var lembretesDto = _mapper.Map<IEnumerable<LembreteDTO>>(lembretes);
 
-      return Ok(lembretesDto);
+        return Ok(lembretesDto);
     }
-    
+
     [HttpGet("{id}", Name = "ObterLembrete")]
     public ActionResult<LembreteDTO> Get(int id)
     {
         var lembrete = _uof.LembreteRepository.GetLembrete(id);
 
-        if (lembrete == null)           
+        if (lembrete == null)
             return NotFound("Lembrete não encontrado...");
-       
-        if (lembrete.Id != id)          
+
+        if (lembrete.Id != id)
             return NotFound($"Lembrete de id= {id} nao encontrado");
 
         var lembretesDto = _mapper.Map<LembreteDTO>(lembrete);
@@ -59,20 +59,23 @@ public class LembretesController : ControllerBase
     {
         var lembretes = _uof.LembreteRepository.GetLembretesPagination(lembretesParameters);
 
-        var metadata = new
-        {
-            lembretes.TotalCount,
-            lembretes.PageSize,
-            lembretes.CurrentPage,
-            lembretes.TotalPages,
-            lembretes.HasNext,
-            lembretes.HasPrevious
-        };
-        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
-         
-        var lembretesDTO = _mapper.Map<IEnumerable<LembreteDTO>>(lembretes);
+        return ObterLembretes(lembretes);
+    }
 
-        return Ok(lembretesDTO);
+    [HttpGet("filter/data/pagination")]
+    public ActionResult<IEnumerable<LembreteDTO>> GetLembretesFilterData([FromQuery] LembretesFiltroData lembretesFiltroParams)
+    {
+        var lembretesFiltradosData = _uof.LembreteRepository.GetLembretesFiltroData(lembretesFiltroParams);
+
+        return ObterLembretes(lembretesFiltradosData);
+    }
+
+    [HttpGet("filter/titulo/pagination")]
+    public ActionResult<IEnumerable<LembreteDTO>> GetLembretesFilterNome([FromQuery] LembretesFiltroNome lembretesFiltro)
+    {
+        var lembretesFiltradosNome = _uof.LembreteRepository.GetLembretesFiltroNome(lembretesFiltro);
+
+        return ObterLembretes(lembretesFiltradosNome);
     }
 
     [HttpPost]//Recebe um Lembrete DTO
@@ -90,18 +93,18 @@ public class LembretesController : ControllerBase
 
         var novoLembreteDto = _mapper.Map<IEnumerable<LembreteDTO>>(novoLembrete);// Mapeia de volta para DTO
 
-        return new CreatedAtRouteResult("ObterLembrete", new {id = novoLembreteDto.First().Id }, novoLembreteDto);
-                       
+        return new CreatedAtRouteResult("ObterLembrete", new { id = novoLembreteDto.First().Id }, novoLembreteDto);
+
     }
     [HttpPut("{id:int}")]//recebe uma Id Dto
     public ActionResult<LembreteDTO> Put(int id, LembreteDTO lembreteDto)
     {
-        if (id != lembreteDto.Id)       
+        if (id != lembreteDto.Id)
             return BadRequest();
 
         var lembrete = _mapper.Map<Lembrete>(lembreteDto);//Precisa transformar um DTO em lembrete para ser alterado no db
 
-        var lembreteAtualizado= _uof.LembreteRepository.Update(lembrete);       
+        var lembreteAtualizado = _uof.LembreteRepository.Update(lembrete);
         _uof.Commit();
 
         var lembreteAtualizadoDto = _mapper.Map<LembreteDTO>(lembreteAtualizado);
@@ -123,5 +126,21 @@ public class LembretesController : ControllerBase
         var lembreteExcluidoDto = _mapper.Map<LembreteDTO>(lembreteExcluido);
 
         return Ok(lembreteExcluidoDto);
+    }
+    private ActionResult<IEnumerable<LembreteDTO>> ObterLembretes(PagedList<Lembrete> lembretes)
+    {
+        var metadata = new
+        {
+            lembretes.TotalCount,
+            lembretes.PageSize,
+            lembretes.CurrentPage,
+            lembretes.TotalPages,
+            lembretes.HasNext,
+            lembretes.HasPrevious
+        };
+        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+        var lembretesDTO = _mapper.Map<IEnumerable<LembreteDTO>>(lembretes);
+        return Ok(lembretesDTO);
     }
 }

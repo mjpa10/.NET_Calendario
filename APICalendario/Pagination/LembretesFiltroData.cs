@@ -1,8 +1,7 @@
-﻿namespace APICalendario.Pagination
+﻿namespace APICalendario.Pagination;
+
+public class LembretesFiltroData : LembretesParameters
 {
-    public class LembretesFiltroData
-    {
-        public  DateOnly? Data { get; set; }
-        public string? DataCriterio { get; set; } // "maior","menor","igual"
-    }
+    public DateOnly? Data { get; set; }
+    public string? DataCriterio { get; set; } // "maior","menor","igual"
 }

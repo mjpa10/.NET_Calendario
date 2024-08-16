@@ -35,28 +35,52 @@ public class LembreteRepository : ILembreteRepository
 
         return lembretesOrdenados;
     }
-    public PagedList<Lembrete> GetLembretesPagination(LembretesFiltroData lembretesFiltroParams)
+    public PagedList<Lembrete> GetLembretesFiltroData(LembretesFiltroData lembretesFiltroParams)
+    {
+        var lembretes = GetLembretes().AsQueryable(); // precisa transformar no asQueryable pq fica mais facil de realizar a quarry
+
+        if (lembretesFiltroParams.Data.HasValue && !string.IsNullOrEmpty(lembretesFiltroParams.DataCriterio))
+        {
+            if (lembretesFiltroParams.DataCriterio.Equals("maior", StringComparison.OrdinalIgnoreCase))
+            {
+                lembretes = lembretes.Where(l => l.Data > lembretesFiltroParams.Data.Value).OrderBy(l => l.Data);
+            }
+            else if (lembretesFiltroParams.DataCriterio.Equals("menor", StringComparison.OrdinalIgnoreCase))
+            {
+                lembretes = lembretes.Where(l => l.Data < lembretesFiltroParams.Data.Value).OrderBy(l => l.Data);
+            }
+            else if (lembretesFiltroParams.DataCriterio.Equals("igual", StringComparison.OrdinalIgnoreCase))
+            {
+                lembretes = lembretes.Where(l => l.Data == lembretesFiltroParams.Data.Value).OrderBy(l => l.Data);
+            }
+        }
+        var lembretesFiltrados = PagedList<Lembrete>.ToPagedList(lembretes, lembretesFiltroParams.PageNumber, lembretesFiltroParams.PageSize);
+        return lembretesFiltrados;
+    }
+    public PagedList<Lembrete> GetLembretesFiltroNome(LembretesFiltroNome lembretesParams)
     {
         var lembretes = GetLembretes().AsQueryable();
 
-        if (lembretesFiltroParams.Data.HasValue && !string.IsNullOrEmpty(lembretesFiltroParams.DataCriterio)
+        if (!string.IsNullOrEmpty(lembretesParams.Titulo))
         {
-
+            lembretes = lembretes.Where(l => l.Titulo.Contains(lembretesParams.Titulo));
         }
+        var lembretesFiltrados = PagedList<Lembrete>.ToPagedList(lembretes, lembretesParams.PageNumber, lembretesParams.PageSize);
+        return lembretesFiltrados;
     }
 
 
     public Lembrete GetLembrete(int id)
     {
-     
-        return _context.Lembretes.FirstOrDefault(l => l.Id == id) ;
+
+        return _context.Lembretes.FirstOrDefault(l => l.Id == id);
     }
     public IEnumerable<Lembrete> Create(Lembrete lembrete)
-    {    
+    {
         if (lembrete is null)
             throw new ArgumentException(nameof(lembrete));
-            
-        var lembretesCriados =  _criaLembretesService.Post(lembrete); ;
+
+        var lembretesCriados = _criaLembretesService.Post(lembrete); ;
 
         foreach (var l in lembretesCriados)
         {
@@ -71,7 +95,8 @@ public class LembreteRepository : ILembreteRepository
     {
         if (lembrete is null)
             throw new ArgumentException(nameof(lembrete));
-        if (lembrete.DiaTodo == true) {   
+        if (lembrete.DiaTodo == true)
+        {
             lembrete.HoraFinal = new TimeOnly(23, 59, 59);
             lembrete.HoraInicio = new TimeOnly(00, 00, 01);
         }
@@ -88,16 +113,16 @@ public class LembreteRepository : ILembreteRepository
     {
         var lembrete = _context.Lembretes.Find(id);
 
-        if (lembrete is null) 
+        if (lembrete is null)
             throw new ArgumentException(nameof(lembrete));
 
         _context.Lembretes.Remove(lembrete);
-       // _context.SaveChanges();
+        // _context.SaveChanges();
 
         return lembrete;
 
     }
 
-   
+
 }
-   
+
