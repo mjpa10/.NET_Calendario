@@ -37,6 +37,7 @@ dotnet restore
 ### 3. Configurando o Banco de Dados
 
 - Crie as configurações de conexão no arquivo `appsettings.json` seguindo esse modelo:
+  
   ```bash
   {
   "Logging": {
@@ -52,9 +53,11 @@ dotnet restore
 }
 ```
 - Execute as migrações para configurar o banco de dados:
+
 ```bash
 dotnet ef migrations add calendariodb
 ```
+
 ```bash
 dotnet ef database update
 ```
