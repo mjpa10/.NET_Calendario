@@ -22,7 +22,11 @@ Este projeto é uma API para gerenciamento de lembretes, desenvolvida utilizando
 
 ```bash
 git clone https://github.com/mjpa10/.NET_Calendario.git
+```
+```bash
 cd .Net_Calendario
+```
+```bash
 cd APICalendario
 ```
 
