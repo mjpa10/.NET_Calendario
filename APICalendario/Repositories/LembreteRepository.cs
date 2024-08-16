@@ -27,9 +27,8 @@ public class LembreteRepository : Repository<Lembrete>, ILembreteRepository
         var lembretesOrdenados = lembretes.OrderBy(l => l.Data)// Ordena os lembretes pela data em ordem crescente
                                           .AsQueryable();// Converte para IQueryable para suportar consultas eficientes
 
-        // Cria uma lista paginada a partir dos lembretes ordenados
-        var resultado = PagedList<Lembrete>.ToPagedList(lembretesOrdenados, lembretesParams.PageNumber, lembretesParams.PageSize);
-
+        var resultado =  lembretesOrdenados.ToPagedList(lembretesParams.PageNumber,
+                                                         lembretesParams.PageSize);
         return resultado;
     }
     public async Task<IPagedList<Lembrete>> GetLembretesFiltroDataAsync(LembretesFiltroData lembretesFiltroParams)
@@ -51,9 +50,9 @@ public class LembreteRepository : Repository<Lembrete>, ILembreteRepository
                 lembretes = lembretes.Where(l => l.Data == lembretesFiltroParams.Data.Value).OrderBy(l => l.Data);
             }
         }
-        // precisa transformar no asQueryable pq fica mais facil de realizar a querry     
-        var lembretesFiltrados = PagedList<Lembrete>.ToPagedList(lembretes.AsQueryable(), lembretesFiltroParams.PageNumber, lembretesFiltroParams.PageSize);
+        var lembretesFiltrados = lembretes.ToPagedList(lembretesFiltroParams.PageNumber, lembretesFiltroParams.PageSize);
         return lembretesFiltrados;
+
     }
     public async Task<IPagedList<Lembrete>> GetLembretesFiltroNomeAsync(LembretesFiltroNome lembretesParams)
     {
@@ -66,7 +65,6 @@ public class LembreteRepository : Repository<Lembrete>, ILembreteRepository
         var lembretesFiltrados =  lembretes.ToPagedList(lembretesParams.PageNumber,lembretesParams.PageSize);
         return lembretesFiltrados;
     }
-
     public IEnumerable<Lembrete> Create(Lembrete lembrete)
     {
         if (lembrete is null)
@@ -82,37 +80,6 @@ public class LembreteRepository : Repository<Lembrete>, ILembreteRepository
         //o commit() ira substituir
 
         return lembretesCriados;
-    }
-    public Lembrete Update(Lembrete lembrete)
-    {
-        if (lembrete is null)
-            throw new ArgumentException(nameof(lembrete));
-        if (lembrete.DiaTodo == true)
-        {
-            lembrete.HoraFinal = new TimeOnly(23, 59, 59);
-            lembrete.HoraInicio = new TimeOnly(00, 00, 01);
-        }
-
-        _context.Entry(lembrete).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-        //_context.SaveChanges();
-
-        return lembrete;
-    }
-
-    public Lembrete Delete(int id)
-    {
-        var lembrete = _context.Lembretes.Find(id);
-
-        if (lembrete is null)
-            throw new ArgumentException(nameof(lembrete));
-
-        _context.Lembretes.Remove(lembrete);
-        // _context.SaveChanges();
-
-        return lembrete;
-
-    }
-
-
+    }  
 }
 

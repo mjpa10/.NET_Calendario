@@ -6,6 +6,7 @@ using APICalendario.Repositories;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using X.PagedList;
 
 namespace APICalendario.Controllers;
 
@@ -53,25 +54,27 @@ public class LembretesController : ControllerBase
 
     [HttpGet("pagination")]
     public async Task<ActionResult<IEnumerable<LembreteDTO>>> Get([FromQuery]
-                                         LembretesParameters lembretesParameters)
+                                         LembretesParameters lembretesParams)
     {
-        var lembretes = await _uof.LembreteRepository.GetLembretesAsync(lembretesParameters);
-
+        var lembretes = await _uof.LembreteRepository.GetLembretesAsync(lembretesParams);
         return ObterLembretes(lembretes);
+
     }
 
     [HttpGet("filter/data/pagination")]
-    public async Task<ActionResult<IEnumerable<LembreteDTO>>> GetLembretesFilterData([FromQuery] LembretesFiltroData lembretesFiltroParams)
+    public async Task<ActionResult<IEnumerable<LembreteDTO>>> GetLembretesFilterData([FromQuery] LembretesFiltroData lembretesFiltro)
     {
-        var lembretesFiltradosData =await _uof.LembreteRepository.GetLembretesFiltroDataAsync(lembretesFiltroParams);
+        var lembretesFiltradosData =await _uof.LembreteRepository
+            .GetLembretesFiltroDataAsync(lembretesFiltro);
 
         return ObterLembretes(lembretesFiltradosData);
     }
 
     [HttpGet("filter/titulo/pagination")]
-    public async Task<ActionResult<IEnumerable<LembreteDTO>>> GetLembretesFilterNome([FromQuery] LembretesFiltroNome lembretesFiltro)
+    public async Task<ActionResult<IEnumerable<LembreteDTO>>> GetLembretesFilterNome([FromQuery] LembretesFiltroNome lembretesFiltroParams)
     {
-        var lembretesFiltradosNome = await _uof.LembreteRepository.GetLembretesFiltroNomeAsync(lembretesFiltro);
+        var lembretesFiltradosNome = await _uof.LembreteRepository
+            .GetLembretesFiltroNomeAsync(lembretesFiltroParams);
 
         return ObterLembretes(lembretesFiltradosNome);
     }
@@ -92,6 +95,7 @@ public class LembretesController : ControllerBase
         return new CreatedAtRouteResult("ObterLembrete", new { id = novoLembreteDto.First().Id }, novoLembreteDto);
 
     }
+
     [HttpPut("{id:int}")]//recebe uma Id Dto
     public async Task<ActionResult<LembreteDTO>> Put(int id, LembreteDTO lembreteDto)
     {
@@ -107,6 +111,7 @@ public class LembretesController : ControllerBase
 
         return Ok(lembreteAtualizado);
     }
+
     [HttpDelete("{id:int}")]
     public async Task<ActionResult<LembreteDTO>> Delete(int id)
     {
@@ -122,16 +127,16 @@ public class LembretesController : ControllerBase
 
         return Ok(lembreteExcluidoDto);
     }
-    private ActionResult<IEnumerable<LembreteDTO>> ObterLembretes(PagedList<Lembrete> lembretes)
+    private ActionResult<IEnumerable<LembreteDTO>> ObterLembretes(IPagedList<Lembrete> lembretes)
     {
         var metadata = new
         {
-            lembretes.TotalCount,
+            lembretes.Count,
             lembretes.PageSize,
-            lembretes.CurrentPage,
-            lembretes.TotalPages,
-            lembretes.HasNext,
-            lembretes.HasPrevious
+            lembretes.PageCount,
+            lembretes.TotalItemCount,
+            lembretes.HasNextPage,
+            lembretes.HasPreviousPage
         };
         Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
 
