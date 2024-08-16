@@ -36,10 +36,24 @@ dotnet restore
 
 ### 3. Configurando o Banco de Dados
 
-- Atualize as configurações de conexão no arquivo `appsettings.json`.
+- Crie as configurações de conexão no arquivo `appsettings.json` seguindo esse modelo:
+  ```bash
+  {
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning"
+    }
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=calendariodb;User Id=***;Password=***;"
+  },
+  "AllowedHosts": "*"
+}
+```
 - Execute as migrações para configurar o banco de dados:
 ```bash
-dotnet ef migrations add MigracaoClone
+dotnet ef migrations add calendariodb
 ```
 ```bash
 dotnet ef database update
