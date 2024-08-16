@@ -60,7 +60,7 @@ dotnet restore
 - Execute as migrações para configurar o banco de dados:
 
 ```bash
-dotnet ef migrations add calendariodb
+dotnet ef migrations add MigracaoInicial
 ```
 
 ```bash
