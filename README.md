@@ -50,7 +50,7 @@ dotnet restore
       "DefaultConnection": "Server=localhost;Database=calendariodb;User Id=seu_usuario;Password=sua_senha;"
   },
   "AllowedHosts": "*"
-}```
+}
 ```
 
 - Execute as migrações para configurar o banco de dados:
