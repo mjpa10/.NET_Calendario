@@ -3,41 +3,38 @@ using APICalendario.Context;
 using APICalendario.Models;
 using APICalendario.Pagination;
 using APICalendario.Services;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using X.PagedList;
+using X.PagedList.Extensions;
 
 
 namespace APICalendario.Repositories;
 
-public class LembreteRepository : ILembreteRepository
+public class LembreteRepository : Repository<Lembrete>, ILembreteRepository
 {
     private readonly AppDbContext _context;
     private readonly ICriaLembretesService _criaLembretesService;
 
-    public LembreteRepository(AppDbContext context, ICriaLembretesService criaLembretesService)
+    public LembreteRepository(AppDbContext context, ICriaLembretesService criaLembretesService) : base(context)
     {
         _context = context;
         _criaLembretesService = criaLembretesService;
     }
 
-    public IEnumerable<Lembrete> GetLembretes()
+    public async Task<IPagedList<Lembrete>> GetLembretesAsync(LembretesParameters lembretesParams)
     {
-        return _context.Lembretes.ToList();
-    }
-    public PagedList<Lembrete> GetLembretesPagination(LembretesParameters lembretesParams)
-    {
-        var lembretes = GetLembretes()
-             .OrderBy(l => l.Data)// Ordena os lembretes pela data em ordem crescente
-             .AsQueryable();// Converte para IQueryable para suportar consultas eficientes
+        var lembretes = await GetAllAsync();
+
+        var lembretesOrdenados = lembretes.OrderBy(l => l.Data)// Ordena os lembretes pela data em ordem crescente
+                                          .AsQueryable();// Converte para IQueryable para suportar consultas eficientes
 
         // Cria uma lista paginada a partir dos lembretes ordenados
-        var lembretesOrdenados = PagedList<Lembrete>
-      .ToPagedList(lembretes, lembretesParams.PageNumber, lembretesParams.PageSize);
+        var resultado = PagedList<Lembrete>.ToPagedList(lembretesOrdenados, lembretesParams.PageNumber, lembretesParams.PageSize);
 
-        return lembretesOrdenados;
+        return resultado;
     }
-    public PagedList<Lembrete> GetLembretesFiltroData(LembretesFiltroData lembretesFiltroParams)
+    public async Task<IPagedList<Lembrete>> GetLembretesFiltroDataAsync(LembretesFiltroData lembretesFiltroParams)
     {
-        var lembretes = GetLembretes().AsQueryable(); // precisa transformar no asQueryable pq fica mais facil de realizar a quarry
+        var lembretes = await GetAllAsync(); 
 
         if (lembretesFiltroParams.Data.HasValue && !string.IsNullOrEmpty(lembretesFiltroParams.DataCriterio))
         {
@@ -54,27 +51,22 @@ public class LembreteRepository : ILembreteRepository
                 lembretes = lembretes.Where(l => l.Data == lembretesFiltroParams.Data.Value).OrderBy(l => l.Data);
             }
         }
-        var lembretesFiltrados = PagedList<Lembrete>.ToPagedList(lembretes, lembretesFiltroParams.PageNumber, lembretesFiltroParams.PageSize);
+        // precisa transformar no asQueryable pq fica mais facil de realizar a querry     
+        var lembretesFiltrados = PagedList<Lembrete>.ToPagedList(lembretes.AsQueryable(), lembretesFiltroParams.PageNumber, lembretesFiltroParams.PageSize);
         return lembretesFiltrados;
     }
-    public PagedList<Lembrete> GetLembretesFiltroNome(LembretesFiltroNome lembretesParams)
+    public async Task<IPagedList<Lembrete>> GetLembretesFiltroNomeAsync(LembretesFiltroNome lembretesParams)
     {
-        var lembretes = GetLembretes().AsQueryable();
+        var lembretes = await GetAllAsync();
 
         if (!string.IsNullOrEmpty(lembretesParams.Titulo))
         {
             lembretes = lembretes.Where(l => l.Titulo.Contains(lembretesParams.Titulo));
         }
-        var lembretesFiltrados = PagedList<Lembrete>.ToPagedList(lembretes, lembretesParams.PageNumber, lembretesParams.PageSize);
+        var lembretesFiltrados =  lembretes.ToPagedList(lembretesParams.PageNumber,lembretesParams.PageSize);
         return lembretesFiltrados;
     }
 
-
-    public Lembrete GetLembrete(int id)
-    {
-
-        return _context.Lembretes.FirstOrDefault(l => l.Id == id);
-    }
     public IEnumerable<Lembrete> Create(Lembrete lembrete)
     {
         if (lembrete is null)
@@ -100,8 +92,6 @@ public class LembreteRepository : ILembreteRepository
             lembrete.HoraFinal = new TimeOnly(23, 59, 59);
             lembrete.HoraInicio = new TimeOnly(00, 00, 01);
         }
-
-
 
         _context.Entry(lembrete).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         //_context.SaveChanges();

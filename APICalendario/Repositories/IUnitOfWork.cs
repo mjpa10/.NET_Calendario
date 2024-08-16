@@ -4,5 +4,5 @@ public interface IUnitOfWork
 {
     ILembreteRepository LembreteRepository { get; }
     //sera o metodo para chama savechanges();
-    void Commit();
+    Task CommitAsync();
 }

@@ -16,20 +16,18 @@ public class LembretesController : ControllerBase
     private readonly IUnitOfWork _uof;
     private readonly IMapper _mapper;
 
-
     public LembretesController(IUnitOfWork uof,
                                IMapper mapper)
     {
         _uof = uof;
         _mapper = mapper;
-
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<LembreteDTO>> Get()
+    public async Task<ActionResult<IEnumerable<LembreteDTO>>> Get()
     //IEnumerable retorna uma lista de objetos lembrete
     {
-        var lembretes = _uof.LembreteRepository.GetLembretes();
+        var lembretes = await _uof.LembreteRepository.GetAllAsync();
 
         //var destino = _mapper.map<Destino>(origem);
         var lembretesDto = _mapper.Map<IEnumerable<LembreteDTO>>(lembretes);
@@ -38,11 +36,11 @@ public class LembretesController : ControllerBase
     }
 
     [HttpGet("{id}", Name = "ObterLembrete")]
-    public ActionResult<LembreteDTO> Get(int id)
+    public async Task<ActionResult<LembreteDTO>> Get(int id)
     {
-        var lembrete = _uof.LembreteRepository.GetLembrete(id);
+        var lembrete = await _uof.LembreteRepository.GetAsync(l => l.Id == id);
 
-        if (lembrete == null)
+        if (lembrete is null)
             return NotFound("Lembrete não encontrado...");
 
         if (lembrete.Id != id)
@@ -54,42 +52,40 @@ public class LembretesController : ControllerBase
     }
 
     [HttpGet("pagination")]
-    public ActionResult<IEnumerable<LembreteDTO>> Get([FromQuery]
+    public async Task<ActionResult<IEnumerable<LembreteDTO>>> Get([FromQuery]
                                          LembretesParameters lembretesParameters)
     {
-        var lembretes = _uof.LembreteRepository.GetLembretesPagination(lembretesParameters);
+        var lembretes = await _uof.LembreteRepository.GetLembretesAsync(lembretesParameters);
 
         return ObterLembretes(lembretes);
     }
 
     [HttpGet("filter/data/pagination")]
-    public ActionResult<IEnumerable<LembreteDTO>> GetLembretesFilterData([FromQuery] LembretesFiltroData lembretesFiltroParams)
+    public async Task<ActionResult<IEnumerable<LembreteDTO>>> GetLembretesFilterData([FromQuery] LembretesFiltroData lembretesFiltroParams)
     {
-        var lembretesFiltradosData = _uof.LembreteRepository.GetLembretesFiltroData(lembretesFiltroParams);
+        var lembretesFiltradosData =await _uof.LembreteRepository.GetLembretesFiltroDataAsync(lembretesFiltroParams);
 
         return ObterLembretes(lembretesFiltradosData);
     }
 
     [HttpGet("filter/titulo/pagination")]
-    public ActionResult<IEnumerable<LembreteDTO>> GetLembretesFilterNome([FromQuery] LembretesFiltroNome lembretesFiltro)
+    public async Task<ActionResult<IEnumerable<LembreteDTO>>> GetLembretesFilterNome([FromQuery] LembretesFiltroNome lembretesFiltro)
     {
-        var lembretesFiltradosNome = _uof.LembreteRepository.GetLembretesFiltroNome(lembretesFiltro);
+        var lembretesFiltradosNome = await _uof.LembreteRepository.GetLembretesFiltroNomeAsync(lembretesFiltro);
 
         return ObterLembretes(lembretesFiltradosNome);
     }
 
     [HttpPost]//Recebe um Lembrete DTO
-    public ActionResult<LembreteDTO> Post(LembreteDTO lembreteDto)
+    public async Task<ActionResult<LembreteDTO>> Post(LembreteDTO lembreteDto)
     {
-        if (lembreteDto == null)
-        {
+        if (lembreteDto == null)        
             return BadRequest("Lembrete inválido");
-        }
+        
         var lembrete = _mapper.Map<Lembrete>(lembreteDto);//Precisa transformar um DTO em lembrete para ser salvo no db
 
         var novoLembrete = _uof.LembreteRepository.Create(lembrete);// Apos ser salvo no db
-
-        _uof.Commit();
+        await _uof.CommitAsync();
 
         var novoLembreteDto = _mapper.Map<IEnumerable<LembreteDTO>>(novoLembrete);// Mapeia de volta para DTO
 
@@ -97,7 +93,7 @@ public class LembretesController : ControllerBase
 
     }
     [HttpPut("{id:int}")]//recebe uma Id Dto
-    public ActionResult<LembreteDTO> Put(int id, LembreteDTO lembreteDto)
+    public async Task<ActionResult<LembreteDTO>> Put(int id, LembreteDTO lembreteDto)
     {
         if (id != lembreteDto.Id)
             return BadRequest();
@@ -105,23 +101,22 @@ public class LembretesController : ControllerBase
         var lembrete = _mapper.Map<Lembrete>(lembreteDto);//Precisa transformar um DTO em lembrete para ser alterado no db
 
         var lembreteAtualizado = _uof.LembreteRepository.Update(lembrete);
-        _uof.Commit();
+        await _uof.CommitAsync();
 
         var lembreteAtualizadoDto = _mapper.Map<LembreteDTO>(lembreteAtualizado);
 
         return Ok(lembreteAtualizado);
     }
     [HttpDelete("{id:int}")]
-    public ActionResult<LembreteDTO> Delete(int id)
+    public async Task<ActionResult<LembreteDTO>> Delete(int id)
     {
-        var lembrete = _uof.LembreteRepository.GetLembrete(id);
+        var lembrete = await _uof.LembreteRepository.GetAsync(l => l.Id == id);
 
-        if (lembrete == null)
-        {
-            return NotFound("Lembrete não encontrado...");
-        }
-        var lembreteExcluido = _uof.LembreteRepository.Delete(id);
-        _uof.Commit();
+        if (lembrete is null)        
+           return NotFound("Lembrete não encontrado...");
+        
+        var lembreteExcluido = _uof.LembreteRepository.Delete(lembrete);
+        await _uof.CommitAsync();
 
         var lembreteExcluidoDto = _mapper.Map<LembreteDTO>(lembreteExcluido);
 

@@ -14,22 +14,17 @@ public class Repository<T> : IRepository<T> where T : class
     {
         _context = context;
     }
-    public IEnumerable<T> GetAll()
+    public async Task<IEnumerable<T>> GetAllAsync()
     {
         //retorna todas as entidades do tipo T numa lista
-        return _context.Set<T>().ToList();
+        return await _context.Set<T>().ToListAsync();
     }
-    public T? Get(Expression<Func<T, bool>> predicate)
+    public async Task<T?> GetAsync(Expression<Func<T, bool>> predicate)
     {
         //retorna a primeira entidade achada ou retorna null
-        return _context.Set<T>().FirstOrDefault(predicate);
+        return await _context.Set<T>().FirstOrDefaultAsync(predicate);
     }
-    public T Create(T entity)
-    {
-        _context.Set<T>().Add(entity);
-        _context.SaveChanges();
-        return entity;
-    }
+   
     public T Update(T entity)
     {
         //_context.Set<T>().Update(entity);

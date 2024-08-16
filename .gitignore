@@ -10,7 +10,8 @@
 *.userosscache
 *.sln.docstates
 
-# Ignorar arquivos de configuração
+# Ignorar appsettings.json
+APICalendario/appsettings.json
 appsettings.json
 appsettings.Development.json
 appsettings.*.json
