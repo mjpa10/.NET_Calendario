@@ -21,7 +21,7 @@ public class CustomLogger : ILogger
         return logLevel == loggerConfig.LogLevel;
     }
 
-    public IDisposable? BeginScope<TState>(TState state)
+    public IDisposable? BeginScope<TState>(TState? state)
     {
         return null;
     }

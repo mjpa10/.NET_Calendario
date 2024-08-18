@@ -11,14 +11,11 @@ namespace APICalendario.Repositories;
 
 public class LembreteRepository : Repository<Lembrete>, ILembreteRepository
 {
-    private readonly AppDbContext _context;
-    private readonly ICriaLembretesService _criaLembretesService;
-
-    public LembreteRepository(AppDbContext context, ICriaLembretesService criaLembretesService) : base(context)
+  
+    public LembreteRepository(AppDbContext context, ICriaLembretesService criaLembretesService)  : base(context, criaLembretesService)
     {
-        _context = context;
-        _criaLembretesService = criaLembretesService;
     }
+
 
     public async Task<IPagedList<Lembrete>> GetLembretesAsync(LembretesParameters lembretesParams)
     {

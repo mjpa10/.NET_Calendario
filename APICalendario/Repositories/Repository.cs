@@ -1,6 +1,7 @@
 ﻿//Nao irei usar pois tenho apenas 1 entidade no db, existe apenas para estudo mesmo
 
 using APICalendario.Context;
+using APICalendario.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -9,9 +10,11 @@ namespace APICalendario.Repositories;
 public class Repository<T> : IRepository<T> where T : class
 {
     protected readonly AppDbContext _context;
+    protected readonly ICriaLembretesService _criaLembretesService;
 
-    public Repository(AppDbContext context)
+    public Repository(AppDbContext context, ICriaLembretesService criaLembretesService)
     {
+        _criaLembretesService = criaLembretesService;
         _context = context;
     }
     public async Task<IEnumerable<T>> GetAllAsync()

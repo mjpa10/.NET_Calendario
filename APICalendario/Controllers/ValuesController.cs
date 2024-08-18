@@ -4,6 +4,7 @@ using APICalendario.Models;
 using APICalendario.Pagination;
 using APICalendario.Repositories;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using X.PagedList;
@@ -25,6 +26,7 @@ public class LembretesController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<LembreteDTO>>> Get()
     //IEnumerable retorna uma lista de objetos lembrete
     {
