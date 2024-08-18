@@ -1,4 +1,4 @@
-#APICalendario
+# APICalendario
 
 Este projeto é uma API para gerenciamento de lembretes, desenvolvida utilizando .NET 7.0. Ele suporta a criação, leitura, atualização e exclusão (CRUD) de lembretes com diferentes frequências (diária, semanal, mensal, anual). Além disso, a API inclui paginação, filtros, métodos assíncronos, autenticação, autorização e suporte a tokens JWT.
 
