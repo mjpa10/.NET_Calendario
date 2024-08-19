@@ -1,6 +1,7 @@
 using APICalendario.Context;
 using APICalendario.DTOs.Mappings;
 using APICalendario.Logging;
+using APICalendario.Models;
 using APICalendario.Repositories;
 using APICalendario.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -27,7 +28,7 @@ builder.Services.AddAuthentication("Bearer").AddJwtBearer();
 
 //usado para complementar o Bear, estamos configurando o IdentityUser para usuarios e IdentityRole para 
 //representar as funcoes de usuario e info de usuarios
-builder.Services.AddIdentity<IdentityUser,IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>() // se relaciona com contexto
     .AddDefaultTokenProviders(); //adicionando os provedores de token p realizar authenticacao   
 
@@ -71,10 +72,10 @@ builder.Services.AddAuthentication(options =>
 });
 
 //services
-builder.Services.AddScoped<ILembreteRepository,LembreteRepository>();
+builder.Services.AddScoped<ILembreteRepository, LembreteRepository>();
 builder.Services.AddScoped<ICriaLembretesService, CriaLembretesService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddAuthorization(options =>
 {
