@@ -23,6 +23,7 @@ builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderCon
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
+//metodo mais completo do swagger para testar api com tokens 
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "APICalendario", Version = "v1" });
@@ -50,9 +51,6 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-
-builder.Services.AddAuthorization();
-
 
 //usado para complementar o Bear, estamos configurando o IdentityUser para usuarios e IdentityRole para 
 //representar as funcoes de usuario e info de usuarios
@@ -99,17 +97,30 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+//criando um servico de autorizacao
+builder.Services.AddAuthorization(options =>
+{  //politica que somente admin pode acessar o recurso
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+
+    //politica que precisa ser admin pra acessar o recurso e exige que tenha uma claim id e esse usuario
+    options.AddPolicy("SuperAdminOnly", policy =>
+                                 policy.RequireRole("Admin").RequireClaim("id", "mjpa10"));
+
+    options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
+
+    //RequireAssertion define uma expressaoo e com condicao customizada p autorizacao, no caso nessa politica
+    // precisa ter id e mjpa10 ou ser superadmin
+    options.AddPolicy("ExclusiveOnly", policy => policy.RequireAssertion(context =>
+                                       context.User.HasClaim(claim => claim.Type == "id" &&  claim.Value == "mjpa10")
+                                       || context.User.IsInRole("SuperAdmin")));
+});
+
 //services
 builder.Services.AddScoped<ILembreteRepository, LembreteRepository>();
 builder.Services.AddScoped<ICriaLembretesService, CriaLembretesService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
-});
 
 //add automapper para transformar DTOs em Lembretes e virse-versa, ajuda na segurança dos dados
 //para nao ser visto, separando as camadas da aplicacao

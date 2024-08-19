@@ -49,6 +49,7 @@ public class AuthController : ControllerBase
             {
                 new Claim(ClaimTypes.Name, user.UserName!),//nome
                 new Claim(ClaimTypes.Email, user.Email!),//email
+                new Claim("id", user.UserName!),//id relacionada ao nume do usuario
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),//fornece o id para o token             
                 //.NewGuid() é uma sequencia de caracteres hexadecimal de 32 digitos, algo como 1A3B944E-3632-467B-A53A-206305310BAE
                 //garantindo q cada id seja unico
@@ -186,9 +187,10 @@ public class AuthController : ControllerBase
         });
     }
 
-    [Authorize]//authorize para protejer o endpoint, somente 1 usuario qu seja autenticado faz o revoke
+    
     [HttpPost]
     [Route("revoke/{username}")]//infroma o nome de usuario
+    [Authorize(Policy = "ExclusiveOnly")]//authorize para protejer o endpoint, somente 1 usuario qu seja autenticado faz o revoke
     public async Task<IActionResult> Revoke(string username)
     {
         //localiza usuario pelo nome
@@ -201,5 +203,66 @@ public class AuthController : ControllerBase
         await _userManager.UpdateAsync(user);
 
         return NoContent();
+    }
+
+    [HttpPost]
+    [Route("CreateRole")]
+    [Authorize(Policy = "SuperAdminOnly")]
+    public async Task<IActionResult> CreateRole(string roleName)
+    {
+        //verifica se a role existe, sera atribuida true or false
+        var roleExist = await _roleManager.RoleExistsAsync(roleName);
+        if (!roleExist)
+        {// se a role n existe, sera criada
+            var roleResult = await _roleManager.CreateAsync(new IdentityRole(roleName));
+
+            if(roleResult.Succeeded)
+            { 
+                return StatusCode(StatusCodes.Status200OK,
+                    new Response { Status = "Sucesso", Message = $"Role {roleName} adicionada com sucesso" });
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status400BadRequest,
+                   new Response { Status = "Erro", Message = $"Erro ao adicionar a Role: {roleName}" });
+            }        
+        }
+        return StatusCode(StatusCodes.Status400BadRequest,
+                  new Response { Status = "Erro", Message = "Role Ja existe" });
+    }
+
+    [HttpPost]
+    [Route("AddUserToRole")]
+    [Authorize(Policy = "SuperAdminOnly")]
+    public async Task<IActionResult> AddUserToRole(string email, string roleName)
+    {
+        //procura o user pelo email
+        var user = await _userManager.FindByEmailAsync(email);
+
+        // Verifica se a role existe
+        var roleExists = await _roleManager.RoleExistsAsync(roleName);
+        if (!roleExists)
+        {
+            return BadRequest(new { error = $"Role '{roleName}' não existe" });
+        }
+
+        //se ele foi localizado, sera adicionado a role
+        if (user != null)
+        {
+            var result = await _userManager.AddToRoleAsync(user, roleName);
+
+            if (result.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status200OK,
+                    new Response { Status = "Sucesso", Message = $"usuario {user.Email} adicionado na role {roleName}" });
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status400BadRequest,
+                  new Response { Status = "Erro", Message = $"Nao foi possivel atribuir o usuario {user.Email} para a role {roleName}" });
+            }
+        }       
+
+        return BadRequest(new { error = "Usuario nao encontrado" });
     }
 }

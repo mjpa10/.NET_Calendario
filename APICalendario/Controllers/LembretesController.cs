@@ -39,6 +39,7 @@ public class LembretesController : ControllerBase
     }
 
     [HttpGet("{id}", Name = "ObterLembrete")]
+    [Authorize]
     public async Task<ActionResult<LembreteDTO>> Get(int id)
     {
         var lembrete = await _uof.LembreteRepository.GetAsync(l => l.Id == id);
@@ -55,6 +56,7 @@ public class LembretesController : ControllerBase
     }
 
     [HttpGet("pagination")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<LembreteDTO>>> Get([FromQuery]
                                          LembretesParameters lembretesParams)
     {
@@ -64,6 +66,7 @@ public class LembretesController : ControllerBase
     }
 
     [HttpGet("filter/data/pagination")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<LembreteDTO>>> GetLembretesFilterData([FromQuery] LembretesFiltroData lembretesFiltro)
     {
         var lembretesFiltradosData =await _uof.LembreteRepository
@@ -73,6 +76,7 @@ public class LembretesController : ControllerBase
     }
 
     [HttpGet("filter/titulo/pagination")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<LembreteDTO>>> GetLembretesFilterNome([FromQuery] LembretesFiltroNome lembretesFiltroParams)
     {
         var lembretesFiltradosNome = await _uof.LembreteRepository
@@ -82,6 +86,7 @@ public class LembretesController : ControllerBase
     }
 
     [HttpPost]//Recebe um Lembrete DTO
+    [Authorize]
     public async Task<ActionResult<LembreteDTO>> Post(LembreteDTO lembreteDto)
     {
         if (lembreteDto == null)        
@@ -99,6 +104,7 @@ public class LembretesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]//recebe uma Id Dto
+    [Authorize]
     public async Task<ActionResult<LembreteDTO>> Put(int id, LembreteDTO lembreteDto)
     {
         if (id != lembreteDto.Id)
@@ -115,6 +121,7 @@ public class LembretesController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult<LembreteDTO>> Delete(int id)
     {
         var lembrete = await _uof.LembreteRepository.GetAsync(l => l.Id == id);
