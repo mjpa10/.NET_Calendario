@@ -6,6 +6,7 @@ using APICalendario.Repositories;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Newtonsoft.Json;
 using X.PagedList;
 
@@ -13,6 +14,7 @@ namespace APICalendario.Controllers;
 
 [Route("[controller]")]
 [ApiController]
+[EnableRateLimiting("fixedwindow")]
 public class LembretesController : ControllerBase
 {
     private readonly IUnitOfWork _uof;

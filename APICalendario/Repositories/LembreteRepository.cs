@@ -36,15 +36,15 @@ public class LembreteRepository : Repository<Lembrete>, ILembreteRepository
         {
             if (lembretesFiltroParams.DataCriterio.Equals("maior", StringComparison.OrdinalIgnoreCase))
             {
-                lembretes = lembretes.Where(l => l.Data > lembretesFiltroParams.Data.Value).OrderBy(l => l.Data);
+                lembretes = lembretes.Where(l => l.Data > lembretesFiltroParams.Data.Value).OrderBy(l => l.Data).ThenBy(l => l.HoraInicio);
             }
             else if (lembretesFiltroParams.DataCriterio.Equals("menor", StringComparison.OrdinalIgnoreCase))
             {
-                lembretes = lembretes.Where(l => l.Data < lembretesFiltroParams.Data.Value).OrderBy(l => l.Data);
+                lembretes = lembretes.Where(l => l.Data < lembretesFiltroParams.Data.Value).OrderBy(l => l.Data).ThenBy(l => l.HoraInicio);
             }
             else if (lembretesFiltroParams.DataCriterio.Equals("igual", StringComparison.OrdinalIgnoreCase))
             {
-                lembretes = lembretes.Where(l => l.Data == lembretesFiltroParams.Data.Value).OrderBy(l => l.Data);
+                lembretes = lembretes.Where(l => l.Data == lembretesFiltroParams.Data.Value).OrderBy(l => l.Data).ThenBy(l => l.HoraInicio);
             }
         }
         var lembretesFiltrados = lembretes.ToPagedList(lembretesFiltroParams.PageNumber, lembretesFiltroParams.PageSize);

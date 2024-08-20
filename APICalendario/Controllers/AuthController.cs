@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -12,6 +13,7 @@ namespace APICalendario.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[EnableRateLimiting("fixedwindow")]
 public class AuthController : ControllerBase
 {
    private readonly ITokenService _tokenService;

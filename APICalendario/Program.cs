@@ -5,12 +5,15 @@ using APICalendario.Models;
 using APICalendario.Repositories;
 using APICalendario.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,11 +24,24 @@ builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderCon
 }));
 
 builder.Services.AddControllers();
+var OrigensComAcessoPermitido = "_origensComAcessoPermitido";
+
+builder.Services.AddCors(options =>
+    options.AddPolicy(name: OrigensComAcessoPermitido,
+    policy =>
+    {
+        //WithOrigins permite apenas dessa origem, ja o AllowAnyOrigin() permite de todas as origens
+        //.AllowAnyMethod(); permite qualquer metodo http
+        //, ja o .WithMethods("GET","POST"), ele podera usar apenas esse 2 metodos
+        policy.WithOrigins("http://localhost:5073")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    }));
+
 builder.Services.AddEndpointsApiExplorer();
 
 //metodo mais completo do swagger para testar api com tokens 
-builder.Services.AddSwaggerGen(c =>
-{
+builder.Services.AddSwaggerGen(c =>{
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "APICalendario", Version = "v1" });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
@@ -115,12 +131,26 @@ builder.Services.AddAuthorization(options =>
                                        || context.User.IsInRole("SuperAdmin")));
 });
 
+//politica de requestlimiter, pode fazer 3 requests por 5 segundos
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter(policyName: "fixedwindow", fixoptions =>
+    {
+        fixoptions.PermitLimit = 3;
+        fixoptions.Window = TimeSpan.FromSeconds(5);
+        fixoptions.QueueLimit = 2;//deixa duas requisicoes na fila
+        fixoptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;//processa quando abrir a janela de 5 sec, do antigo para o novo
+    });
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
+
 //services
 builder.Services.AddScoped<ILembreteRepository, LembreteRepository>();
 builder.Services.AddScoped<ICriaLembretesService, CriaLembretesService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+
 
 //add automapper para transformar DTOs em Lembretes e virse-versa, ajuda na segurança dos dados
 //para nao ser visto, separando as camadas da aplicacao
@@ -136,8 +166,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseStaticFiles();
+app.UseRouting();
 
+app.UseRateLimiter();
+
+app.UseCors(OrigensComAcessoPermitido);
+
+app.UseAuthorization();
 app.MapControllers();
 app.Run();
