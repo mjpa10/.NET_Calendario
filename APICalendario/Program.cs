@@ -9,8 +9,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
@@ -41,9 +43,20 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 
 //metodo mais completo do swagger para testar api com tokens 
-builder.Services.AddSwaggerGen(c =>{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "APICalendario", Version = "v1" });
-
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "APICalendario",
+        Description = "Calendario com Lembretes",
+        Contact = new OpenApiContact
+        {
+            Name = "Matheus",
+            Email = "m.theus.jose.pereira@gmail.com"
+        }
+    });
+   
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
     {
         Name = "Authorization",
@@ -66,6 +79,9 @@ builder.Services.AddSwaggerGen(c =>{
             new string[]{}
         }
     });
+
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 
 //usado para complementar o Bear, estamos configurando o IdentityUser para usuarios e IdentityRole para 

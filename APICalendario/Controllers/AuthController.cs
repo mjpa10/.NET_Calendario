@@ -14,6 +14,8 @@ namespace APICalendario.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [EnableRateLimiting("fixedwindow")]
+[Produces("application/json")]
+[ApiConventionType(typeof(DefaultApiConventions))]
 public class AuthController : ControllerBase
 {
    private readonly ITokenService _tokenService;
@@ -32,8 +34,16 @@ public class AuthController : ControllerBase
         _Configuration = configuration;
     }
 
+    /// <summary>
+    /// Verifica as credenciais de um usuário e retorna um token JWT.
+    /// </summary>
+    /// <param name="model">Um objeto do tipo LoginModel contendo nome de usuário e senha.</param>
+    /// <returns>Status 200 e o token JWT para o cliente, ou Status 401 se as credenciais forem inválidas.</returns>
     [HttpPost]
     [Route("login")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesDefaultResponseType]
     public async Task<IActionResult> Login([FromBody] LoginModel model)
     {
         // verifica se o usuario existe
@@ -100,8 +110,16 @@ public class AuthController : ControllerBase
         return Unauthorized();
     }
 
+    /// <summary>
+    /// Registra um novo usuário no sistema.
+    /// </summary>
+    /// <param name="model">Um objeto do tipo RegisterModel contendo as informações do usuário.</param>
+    /// <returns>Status 200 se o usuário for criado com sucesso, ou Status 500 se houver erro.</returns>
     [HttpPost]
     [Route("register")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status500InternalServerError)]
+    [ProducesDefaultResponseType]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
         //vai procurar o user pelo nome
@@ -133,8 +151,15 @@ public class AuthController : ControllerBase
         return Ok(new Response { Status = "sucesso", Message = "Usuario criado com sucesso" });
     }
 
+    /// <summary>
+    /// Renova o token JWT de acesso e gera um novo refresh token.
+    /// </summary>
+    /// <param name="tokenModel">Um objeto contendo os tokens de acesso e refresh expirados.</param>
+    /// <returns>Status 200 com os novos tokens, ou Status 400 se o token for inválido.</returns>
     [HttpPost]
     [Route("refresh-token")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    [ProducesDefaultResponseType]
     //rece um token expirado para ser criado novamente
     public async Task<IActionResult> RefreshToken(TokenModel tokenModel)
     {
@@ -189,10 +214,17 @@ public class AuthController : ControllerBase
         });
     }
 
-    
+    /// <summary>
+    /// Revoga o refresh token de um usuário, removendo a capacidade de renovar o token JWT.
+    /// </summary>
+    /// <param name="username">Nome do usuário cujo token será revogado.</param>
+    /// <returns>Status 204 se o token for revogado com sucesso, ou Status 400 se o nome do usuário for inválido.</returns>
     [HttpPost]
     [Route("revoke/{username}")]//infroma o nome de usuario
     [Authorize(Policy = "ExclusiveOnly")]//authorize para protejer o endpoint, somente 1 usuario qu seja autenticado faz o revoke
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    [ProducesDefaultResponseType]
     public async Task<IActionResult> Revoke(string username)
     {
         //localiza usuario pelo nome
@@ -207,9 +239,17 @@ public class AuthController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Cria uma nova role no sistema.
+    /// </summary>
+    /// <param name="roleName">Nome da role a ser criada.</param>
+    /// <returns>Status 200 se a role for criada com sucesso, ou Status 400 se a role já existir ou houver erro.</returns>
     [HttpPost]
     [Route("CreateRole")]
     [Authorize(Policy = "SuperAdminOnly")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
+    [ProducesDefaultResponseType]
     public async Task<IActionResult> CreateRole(string roleName)
     {
         //verifica se a role existe, sera atribuida true or false
@@ -233,9 +273,18 @@ public class AuthController : ControllerBase
                   new Response { Status = "Erro", Message = "Role Ja existe" });
     }
 
+    /// <summary>
+    /// Adiciona um usuário a uma role específica.
+    /// </summary>
+    /// <param name="email">Email do usuário a ser adicionado.</param>
+    /// <param name="roleName">Nome da role à qual o usuário será adicionado.</param>
+    /// <returns>Status 200 se o usuário for adicionado com sucesso, ou Status 400 se houver erro.</returns>
     [HttpPost]
     [Route("AddUserToRole")]
     [Authorize(Policy = "SuperAdminOnly")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesDefaultResponseType]
     public async Task<IActionResult> AddUserToRole(string email, string roleName)
     {
         //procura o user pelo email
