@@ -26,7 +26,7 @@ git clone https://github.com/mjpa10/.NET_Calendario.git
 ```
 
 ```bash
-cd .NET_Calendario/APICalendario
+cd .NET_Calendario
 ```
 
 ### 2. Instalando Dependências
@@ -35,6 +35,9 @@ Use o comando abaixo para restaurar as dependências do projeto:
 
 ```bash
 dotnet restore
+```
+```bash
+cd APICalendario
 ```
 ### 3. Configurando o Banco de Dados e o autenticador de tokens
 
