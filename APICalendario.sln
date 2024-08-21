@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APICalendario", "APICalendario\APICalendario.csproj", "{6A7FD004-6384-47A3-B39B-EA607073020F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "APICalendario", "APICalendario\APICalendario.csproj", "{6A7FD004-6384-47A3-B39B-EA607073020F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiLembretexUnitTests", "ApiLembretexUnitTests\ApiLembretexUnitTests.csproj", "{396B15F9-0990-455D-B045-271265F1D7B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{6A7FD004-6384-47A3-B39B-EA607073020F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A7FD004-6384-47A3-B39B-EA607073020F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A7FD004-6384-47A3-B39B-EA607073020F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{396B15F9-0990-455D-B045-271265F1D7B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{396B15F9-0990-455D-B045-271265F1D7B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{396B15F9-0990-455D-B045-271265F1D7B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{396B15F9-0990-455D-B045-271265F1D7B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

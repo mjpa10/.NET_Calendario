@@ -10,6 +10,11 @@ public class UnitOfWork : IUnitOfWork
 
     public AppDbContext _context;
 
+    public UnitOfWork(AppDbContext context)
+    {
+        _context = context;
+       
+    }
     public UnitOfWork(AppDbContext context, ICriaLembretesService criaLembretesService)
     {
         _context = context;

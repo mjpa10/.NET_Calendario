@@ -55,6 +55,11 @@ public class LembretesController : ControllerBase
     {
         var lembrete = await _uof.LembreteRepository.GetAsync(l => l.Id == id);
 
+        if (id == null || id <= 0)
+        {
+            return BadRequest("Id de Lembrete Invalido");
+        }
+
         if (lembrete is null)
             return NotFound("Lembrete não encontrado...");
 
@@ -80,11 +85,11 @@ public class LembretesController : ControllerBase
         return ObterLembretes(lembretes);
 
     }
+
     /// <summary>
     /// Retorna uma lista paginada de objetos Lembrete filtrados por data
     /// </summary>
     /// <returns>Uma lista paginada de objetos Lembrete filtrados por data</returns>
-
     [HttpGet("filter/data/pagination")]
     [Authorize]
     public async Task<ActionResult<IEnumerable<LembreteDTO>>> GetLembretesFilterData([FromQuery] LembretesFiltroData lembretesFiltro)
@@ -119,7 +124,7 @@ public class LembretesController : ControllerBase
     [Authorize]
     public async Task<ActionResult<LembreteDTO>> Post(LembreteDTO lembreteDto)
     {
-        if (lembreteDto == null)        
+        if (lembreteDto is null)        
             return BadRequest("Lembrete inválido");
         
         var lembrete = _mapper.Map<Lembrete>(lembreteDto);//Precisa transformar um DTO em lembrete para ser salvo no db
@@ -180,6 +185,7 @@ public class LembretesController : ControllerBase
 
         return Ok(lembreteExcluidoDto);
     }
+
     /// <summary>
     /// Monta e retorna uma lista paginada de lembretes
     /// </summary>

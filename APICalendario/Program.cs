@@ -164,7 +164,7 @@ builder.Services.AddRateLimiter(options =>
 builder.Services.AddScoped<ILembreteRepository, LembreteRepository>();
 builder.Services.AddScoped<ICriaLembretesService, CriaLembretesService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 
