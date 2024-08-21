@@ -24,9 +24,11 @@ Este projeto é uma API para gerenciamento de lembretes, desenvolvida utilizando
 ```bash
 git clone https://github.com/mjpa10/.NET_Calendario.git
 ```
+
 ```bash
 cd .NET_Calendario/APICalendario
 ```
+
 ### 2. Instalando Dependências
 
 Use o comando abaixo para restaurar as dependências do projeto:
@@ -34,8 +36,24 @@ Use o comando abaixo para restaurar as dependências do projeto:
 ```bash
 dotnet restore
 ```
-
 ### 3. Configurando o Banco de Dados e o autenticador de tokens
+
+- Crie as configurações de conexão no arquivo `appsettings.json` dentro da pasta `\APICalendario`, seguindo esse modelo:
+  
+```json
+ {
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=calendariodb;Uid=seu_usuario;Password=sua_senha;"
+  },
+  "JWT": {
+    "ValidAudiance": "http://localhost:7066",
+    "ValidIssuer": "http://localhost:5066",
+    "SecretKey": "SuaChavePrivada",
+    "TokenValidInMinutes": 30,
+    "RefreshTokenValidyInMinutes": 60
+  }
+} //Substitua seu_usuario e sua_senha pelos valores de login do seu banco de dados.
+```
 
 - Crie as configurações de conexão no arquivo `appsettings.Development.json` dentro da pasta `\APICalendario`, seguindo esse modelo:
 
@@ -64,23 +82,6 @@ dotnet restore
     }
   }
 }
-```
-
-- Crie as configurações de conexão no arquivo `appsettings.json` dentro da pasta `\APICalendario`, seguindo esse modelo:
-  
-```json
- {
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=calendariodb;Uid=seu_usuario;Password=sua_senha;"
-  },
-  "JWT": {
-    "ValidAudiance": "http://localhost:7066",
-    "ValidIssuer": "http://localhost:5066",
-    "SecretKey": "SuaChavePrivada",
-    "TokenValidInMinutes": 30,
-    "RefreshTokenValidyInMinutes": 60
-  }
-} //Substitua seu_usuario e sua_senha pelos valores de login do seu banco de dados.
 ```
 
 - Execute as migrações para configurar o banco de dados:
