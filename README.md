@@ -49,13 +49,13 @@ cd APICalendario
     "DefaultConnection": "Server=localhost;Database=calendariodb;Uid=seu_usuario;Password=sua_senha;"
   },
   "JWT": {
-    "ValidAudiance": "http://localhost:7066",
-    "ValidIssuer": "http://localhost:5066",
-    "SecretKey": "SuaChavePrivada",
-    "TokenValidInMinutes": 30,
-    "RefreshTokenValidyInMinutes": 60
+    "ValidAudience": "http://localhost:7016", //Representa o usuario válido para o token JWT
+    "ValidIssuer": "http://localhost:5066", //Indica o emissor válido do token JWT, a fonte
+    "SecretKey": "Sua@Super#Secreta&Chave*Privada!2024%", //Essa é a chave secreta utilizada para assinar e validar o token
+    "TokenValidityInMinutes": 30, //Define a duração de validade do token JWT em minutos
+    "RefreshTokenValidyInMinutes": 60 //Especifica por quanto tempo um refresh token é válido
   }
-} //Substitua seu_usuario e sua_senha pelos valores de login do seu banco de dados.
+}
 ```
 
 - Crie as configurações de conexão no arquivo `appsettings.Development.json` dentro da pasta `\APICalendario`, seguindo esse modelo:
@@ -96,21 +96,17 @@ dotnet ef migrations add MigracaoInicial
 dotnet ef database update
 ```
 
-### 4. Compilando o Projeto
+### 4. Abra o Projeto na IDE:
 
-Compile o projeto utilizando o comando:
+Inicie sua IDE e abra o arquivo de solução (.sln) que corresponde ao projeto, No caso o `APICalendario.sln`.
 
-```bash
-dotnet build
-```
+### 5. Compile o Projeto:
 
-### 5. Executando o Projeto
+Na IDE, localize e selecione a opção para compilar o projeto. Normalmente, isso pode ser feito clicando com o botão direito no arquivo de solução ou projeto no Gerenciador de Soluções e selecionando "Compilar" ou "Build".
 
-Execute o projeto utlizando o comando :
+### 6. Inicie o Projeto:
 
-```bash
-dotnet watch run
-```
+pós a compilação bem-sucedida, inicie o projeto usando a opção "Iniciar" ou "Run" na IDE. Pode ser usado o Atalaho F5 Também
 
 ## Estrutura do Projeto
 
