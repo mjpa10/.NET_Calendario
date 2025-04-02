@@ -116,4 +116,8 @@ pós a compilação bem-sucedida, inicie o projeto usando a opção "Iniciar" ou
 - **Services**: Contém os serviços responsáveis pela lógica de criação de lembretes.
 - **DTOs**: Data Transfer Objects utilizados para transferência de dados entre as camadas.
 - **Pagination**: Contém as classes responsáveis pela paginação e filtros de lembretes.
-- 
+
+### 5. fotos do projeto:
+![image](https://github.com/user-attachments/assets/566af633-f780-4c96-82cc-037a94d67f2e)
+- exemplo de senha criptografada com uso de JWt Token
+
